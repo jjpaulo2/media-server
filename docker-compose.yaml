@@ -1,0 +1,53 @@
+services:
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    ports:
+      - 5080:5080
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - ./data/qbittorrent/config:/config
+      - ./data/qbittorrent/downloads:/downloads
+    env_file:
+      - .env
+    environment:
+      WEBUI_PORT: 5080
+      TORRENTING_PORT: 6881
+  
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    restart: unless-stopped
+    ports:
+      - 9696:9696
+    volumes:
+      - ./data/prowlarr/config:/config
+    env_file:
+      - .env
+
+  radarr:
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    ports:
+      - 7878:7878
+    volumes:
+      - ./data/radarr/config:/config
+      - ./data/radarr/media:/media
+      - ./data/qbittorrent/downloads:/downloads
+    env_file:
+      - .env
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    restart: unless-stopped
+    ports:
+      - 8096:8096
+      - 7359:7359/udp
+      - 8920:8920
+    volumes:
+      - ./data/jellyfin/config:/config
+      - ./data/jellyfin/cache:/cache
+      - ./data/qbittorrent/downloads:/media
+    env_file:
+      - .env
